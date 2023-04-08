@@ -22,14 +22,6 @@ namespace QtNodes
     class NODE_EDITOR_PUBLIC NodeDelegateModelRegistry
     {
     public:
-        using RegistryItemPtr = std::unique_ptr<NodeDelegateModel>;
-        using RegistryItemCreator = std::function<RegistryItemPtr()>;
-        using RegisteredModelCreatorsMap = std::unordered_map<QString, RegistryItemCreator>;
-        using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
-        using CategoriesSet = std::set<QString>;
-
-        // using RegisteredTypeConvertersMap = std::map<TypeConverterId, TypeConverter>;
-
         NodeDelegateModelRegistry() = default;
         ~NodeDelegateModelRegistry() = default;
 
@@ -56,27 +48,19 @@ namespace QtNodes
         template<typename ModelType>
         void registerModel(QString const &category = "Nodes")
         {
-            //RegistryItemPtr = NodeDelegateModel
-            RegistryItemPtr tmp;
-            qDebug()<<QString::fromStdString(std::string(typeid(tmp).name()));
+            std::unique_ptr<NodeDelegateModel> tmp;
+            qDebug() << QString::fromStdString(std::string(typeid(tmp).name()));
             std::function<std::unique_ptr<NodeDelegateModel>()> creator = []() { return std::make_unique<ModelType>(); };
-            //std::function<RegistryItemPtr()> creator = std::make_unique<ModelType>();
             registerModel<ModelType>(std::move(creator), category);
         }
 
         std::unique_ptr<NodeDelegateModel> create(QString const &modelName);
 
-        std::unordered_map<QString, RegistryItemCreator> const &registeredModelCreators() const;
+        std::unordered_map<QString, std::function<std::unique_ptr<NodeDelegateModel>()>> const &registeredModelCreators() const;
 
         std::unordered_map<QString, QString> const &registeredModelsCategoryAssociation() const;
 
-        CategoriesSet const &categories() const;
-
-#if 0
-  TypeConverter
-  getTypeConverter(NodeDataType const& d1,
-                   NodeDataType const& d2) const;
-#endif
+        std::set<QString> const &categories() const;
 
     private:
         std::unordered_map<QString, QString> _registeredModelsCategory;
@@ -85,12 +69,8 @@ namespace QtNodes
 
         std::unordered_map<QString, std::function<std::unique_ptr<NodeDelegateModel>()>> _registeredItemCreators;
 
-#if 0
-  RegisteredTypeConvertersMap _registeredTypeConverters;
-#endif
-
     private:
-        //如果注册的ModelType类具有静态成员方法`static QString Name();`，使用它。否则，使用非static方法:`虚拟QString名称()const;`
+        // 如果注册的ModelType类具有静态成员方法`static QString Name();`，使用它。否则，使用非static方法:`虚拟QString名称()const;`
         template<typename T, typename = void>
         struct HasStaticMethodName : std::false_type
         {
@@ -102,13 +82,13 @@ namespace QtNodes
         };
 
         template<typename ModelType>
-        static QString computeName(std::true_type, RegistryItemCreator const &)
+        static QString computeName(std::true_type, std::function<std::unique_ptr<NodeDelegateModel>()> const &)
         {
             return ModelType::Name();
         }
 
         template<typename ModelType>
-        static QString computeName(std::false_type, RegistryItemCreator const &creator)
+        static QString computeName(std::false_type, std::function<std::unique_ptr<NodeDelegateModel>()> const &creator)
         {
             return creator()->name();
         }
