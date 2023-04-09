@@ -2,14 +2,8 @@
 
 #include "DynamicPortsModel.hpp"
 
-PortAddRemoveWidget::PortAddRemoveWidget(unsigned int nInPorts,
-                                         unsigned int nOutPorts,
-                                         NodeId nodeId,
-                                         DynamicPortsModel &model,
-                                         QWidget *parent)
-    : QWidget(parent)
-    , _nodeId(nodeId)
-    , _model(model)
+PortAddRemoveWidget::PortAddRemoveWidget(unsigned int nInPorts, unsigned int nOutPorts, NodeId nodeId, DynamicPortsModel &model, QWidget *parent)
+    : QWidget(parent), _nodeId(nodeId), _model(model)
 {
     setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
 
@@ -45,12 +39,15 @@ void PortAddRemoveWidget::populateButtons(PortType portType, unsigned int nPorts
     // one element - a spacer - is alvays present in this layout.
 
     if (vl->count() - 1 < nPorts)
-        while (vl->count() - 1 < nPorts) {
+        while (vl->count() - 1 < nPorts)
+        {
             addButtonGroupToLayout(vl, 0);
         }
 
-    if (vl->count() - 1 > nPorts) {
-        while (vl->count() - 1 > nPorts) {
+    if (vl->count() - 1 > nPorts)
+    {
+        while (vl->count() - 1 > nPorts)
+        {
             removeButtonGroupFromLayout(vl, 0);
         }
     }
@@ -79,7 +76,8 @@ QHBoxLayout *PortAddRemoveWidget::addButtonGroupToLayout(QVBoxLayout *vbl, unsig
 void PortAddRemoveWidget::removeButtonGroupFromLayout(QVBoxLayout *vbl, unsigned int portIndex)
 {
     // Last item in the layout is always a spacer
-    if (vbl->count() > 1) {
+    if (vbl->count() > 1)
+    {
         auto item = vbl->itemAt(portIndex);
 
         // Delete [+] and [-] QPushButton widgets
@@ -131,14 +129,15 @@ void PortAddRemoveWidget::onMinusClicked()
     adjustSize();
 }
 
-std::pair<PortType, PortIndex> PortAddRemoveWidget::findWhichPortWasClicked(QObject *sender,
-                                                                            int const buttonIndex)
+std::pair<PortType, PortIndex> PortAddRemoveWidget::findWhichPortWasClicked(QObject *sender, int const buttonIndex)
 {
     PortType portType = PortType::None;
     PortIndex portIndex = QtNodes::InvalidPortIndex;
 
-    auto checkOneSide = [&portType, &portIndex, &sender, &buttonIndex](QVBoxLayout *sideLayout) {
-        for (int i = 0; i < sideLayout->count(); ++i) {
+    auto checkOneSide = [&portType, &portIndex, &sender, &buttonIndex](QVBoxLayout *sideLayout)
+    {
+        for (int i = 0; i < sideLayout->count(); ++i)
+        {
             auto layoutItem = sideLayout->itemAt(i);
             auto hLayout = dynamic_cast<QHBoxLayout *>(layoutItem);
 
@@ -147,7 +146,8 @@ std::pair<PortType, PortIndex> PortAddRemoveWidget::findWhichPortWasClicked(QObj
 
             auto widget = static_cast<QWidgetItem *>(hLayout->itemAt(buttonIndex))->widget();
 
-            if (sender == widget) {
+            if (sender == widget)
+            {
                 portIndex = i;
                 break;
             }
@@ -156,12 +156,16 @@ std::pair<PortType, PortIndex> PortAddRemoveWidget::findWhichPortWasClicked(QObj
 
     checkOneSide(_left);
 
-    if (portIndex != QtNodes::InvalidPortIndex) {
+    if (portIndex != QtNodes::InvalidPortIndex)
+    {
         portType = PortType::In;
-    } else {
+    }
+    else
+    {
         checkOneSide(_right);
 
-        if (portIndex != QtNodes::InvalidPortIndex) {
+        if (portIndex != QtNodes::InvalidPortIndex)
+        {
             portType = PortType::Out;
         }
     }

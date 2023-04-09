@@ -45,14 +45,6 @@ namespace QtNodes
         //定义是否可以断开连接。
         virtual bool detachPossible(ConnectionId const) const { return true; }
 
-        /// Creates a new connection between two nodes.
-        /**
-         * Default implementation emits signal
-         * `connectionCreated(connectionId)`
-         *
-         * In the derived classes user must emite the signal to notify the
-         * scene about the changes.
-         */
         //创建两个节点之间的新连接。
         //默认实现发出信号“connectionCreated (connectionId)”在派生类中，用户必须发出信号以通知关于变化的场景。
         virtual void addConnection(ConnectionId const connectionId) = 0;
@@ -76,25 +68,15 @@ namespace QtNodes
             return NodeFlag::NoFlags;
         }
 
-        /// @brief Sets node properties.
-        /**
-         * Sets: Node Caption, Node Caption Visibility,
-         * Shyle, State, Node Position etc.
-         * @see NodeRole.
-         */
+        //设置节点属性
+        //集合:节点标题，节点标题可见性，
+        //状态，节点位置等。
         virtual bool setNodeData(NodeId nodeId, NodeRole role, QVariant value) = 0;
 
-        /// @brief Returns port-related data for requested NodeRole.
-        /**
-         * @returns Port Data Type, Port Data, Connection Policy, Port
-         * Caption.
-         */
+        //返回所请求的NodeRole的端口相关数据。
+        //@返回端口数据类型，端口数据，连接策略，端口标题。
         virtual QVariant portData(NodeId nodeId, PortType portType, PortIndex index, PortRole role) const = 0;
-
-        /**
-         * A utility function that unwraps the `QVariant` value returned from the
-         * standard `QVariant AbstractGraphModel::portData(...)` function.
-         */
+        //一个公共函数，用于解析标准`QVariant AbstractGraphModel::portData(…)`函数返回的`QVariant`值。
         template<typename T>
         T portData(NodeId nodeId, PortType portType, PortIndex index, PortRole role) const
         {
@@ -108,10 +90,7 @@ namespace QtNodes
 
         virtual bool deleteNode(NodeId const nodeId) = 0;
 
-        /**
-         * Reimplement the function if you want to store/restore the node's
-         * inner state during undo/redo node deletion operations.
-         */
+        //如果您想在撤销/重做节点删除操作期间存储/恢复节点的内部状态，请重新实现该功能。
         virtual QJsonObject saveNode(NodeId const) const { return {}; }
 
         /**

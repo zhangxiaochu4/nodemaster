@@ -34,53 +34,51 @@ void initializeModel(DynamicPortsModel &graphModel)
     graphModel.addConnection(ConnectionId{id1, 0, id2, 0});
 }
 
-QMenuBar *createSaveRestoreMenu(DynamicPortsModel &graphModel,
-                                BasicGraphicsScene *scene,
-                                GraphicsView &view)
+QMenuBar *createSaveRestoreMenu(DynamicPortsModel &graphModel, BasicGraphicsScene *scene, GraphicsView &view)
 {
     auto menuBar = new QMenuBar();
     QMenu *menu = menuBar->addMenu("File");
     auto saveAction = menu->addAction("Save Scene");
     auto loadAction = menu->addAction("Load Scene");
 
-    QObject::connect(saveAction, &QAction::triggered, scene, [&graphModel] {
-        QString fileName = QFileDialog::getSaveFileName(nullptr,
-                                                        "Open Flow Scene",
-                                                        QDir::homePath(),
-                                                        "Flow Scene Files (*.flow)");
+    QObject::connect(saveAction, &QAction::triggered, scene,
+                     [&graphModel]
+                     {
+                         QString fileName = QFileDialog::getSaveFileName(nullptr, "Open Flow Scene", QDir::homePath(), "Flow Scene Files (*.flow)");
 
-        if (!fileName.isEmpty()) {
-            if (!fileName.endsWith("flow", Qt::CaseInsensitive))
-                fileName += ".flow";
+                         if (!fileName.isEmpty())
+                         {
+                             if (!fileName.endsWith("flow", Qt::CaseInsensitive))
+                                 fileName += ".flow";
 
-            QFile file(fileName);
-            if (file.open(QIODevice::WriteOnly)) {
-                file.write(QJsonDocument(graphModel.save()).toJson());
-            }
-        }
-    });
+                             QFile file(fileName);
+                             if (file.open(QIODevice::WriteOnly))
+                             {
+                                 file.write(QJsonDocument(graphModel.save()).toJson());
+                             }
+                         }
+                     });
 
-    QObject::connect(loadAction, &QAction::triggered, scene, [&graphModel, &view, scene] {
-        QString fileName = QFileDialog::getOpenFileName(nullptr,
-                                                        "Open Flow Scene",
-                                                        QDir::homePath(),
-                                                        "Flow Scene Files (*.flow)");
-        if (!QFileInfo::exists(fileName))
-            return;
+    QObject::connect(loadAction, &QAction::triggered, scene,
+                     [&graphModel, &view, scene]
+                     {
+                         QString fileName = QFileDialog::getOpenFileName(nullptr, "Open Flow Scene", QDir::homePath(), "Flow Scene Files (*.flow)");
+                         if (!QFileInfo::exists(fileName))
+                             return;
 
-        QFile file(fileName);
+                         QFile file(fileName);
 
-        if (!file.open(QIODevice::ReadOnly))
-            return;
+                         if (!file.open(QIODevice::ReadOnly))
+                             return;
 
-        scene->clearScene();
+                         scene->clearScene();
 
-        QByteArray const wholeFile = file.readAll();
+                         QByteArray const wholeFile = file.readAll();
 
-        graphModel.load(QJsonDocument::fromJson(wholeFile).object());
+                         graphModel.load(QJsonDocument::fromJson(wholeFile).object());
 
-        view.centerScene();
-    });
+                         view.centerScene();
+                     });
 
     return menuBar;
 }
@@ -88,13 +86,15 @@ QMenuBar *createSaveRestoreMenu(DynamicPortsModel &graphModel,
 QAction *createNodeAction(DynamicPortsModel &graphModel, GraphicsView &view)
 {
     auto action = new QAction(QStringLiteral("Create Node"), &view);
-    QObject::connect(action, &QAction::triggered, [&]() {
-        // Mouse position in scene coordinates.
-        QPointF posView = view.mapToScene(view.mapFromGlobal(QCursor::pos()));
+    QObject::connect(action, &QAction::triggered,
+                     [&]()
+                     {
+                         // Mouse position in scene coordinates.
+                         QPointF posView = view.mapToScene(view.mapFromGlobal(QCursor::pos()));
 
-        NodeId const newId = graphModel.addNode();
-        graphModel.setNodeData(newId, NodeRole::Position, posView);
-    });
+                         NodeId const newId = graphModel.addNode();
+                         graphModel.setNodeData(newId, NodeRole::Position, posView);
+                     });
 
     return action;
 }
