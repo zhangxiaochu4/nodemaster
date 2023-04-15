@@ -6,22 +6,27 @@ cmake_policy(SET CMP0068 NEW) # new in 3.9. The NEW behavior of this policy is t
 
 project(QtNodesLibrary CXX)
 
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
+#set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+message(WARNING "CMAKE_MODULE_PATH is '${CMAKE_MODULE_PATH}'")
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 set(OpenGL_GL_PREFERENCE LEGACY)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 get_directory_property(_has_parent PARENT_DIRECTORY)
+message(WARNING "PARENT_DIRECTORY is '${PARENT_DIRECTORY}'")
+
 if(_has_parent)
   set(is_root_project OFF)
+  message(WARNING "_has_parent is OFF")
 else()
   set(is_root_project ON)
+  message(WARNING "_has_parent is ON")
 endif()
 
 set(QT_NODES_DEVELOPER_DEFAULTS "${is_root_project}" CACHE BOOL "Turns on default settings for development of QtNodes")
-
+message(WARNING "QT_NODES_DEVELOPER_DEFAULTS is_root_project is '${is_root_project}'")
 option(BUILD_TESTING "Build tests" "${QT_NODES_DEVELOPER_DEFAULTS}")
 option(BUILD_EXAMPLES "Build Examples" "${QT_NODES_DEVELOPER_DEFAULTS}")
 option(BUILD_DOCS "Build Documentation" "${QT_NODES_DEVELOPER_DEFAULTS}")
@@ -30,7 +35,7 @@ option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
 option(QT_NODES_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
 
 enable_testing()
-
+#on
 if(QT_NODES_DEVELOPER_DEFAULTS)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")

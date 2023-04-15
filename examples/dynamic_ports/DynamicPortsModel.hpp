@@ -40,7 +40,7 @@ public:
     ~DynamicPortsModel() override;
 
     std::unordered_set<NodeId> allNodeIds() const override;
-
+    //返回所有接入的node
     std::unordered_set<ConnectionId> allConnectionIds(NodeId const nodeId) const override;
 
     std::unordered_set<ConnectionId> connections(NodeId nodeId, PortType portType, PortIndex portIndex) const override;
