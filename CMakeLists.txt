@@ -41,7 +41,11 @@ if(QT_NODES_DEVELOPER_DEFAULTS)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 endif()
+message(WARNING "PROJECT_BINARY_DIR  is '${PROJECT_BINARY_DIR}'")
+message(WARNING "CMAKE_ROOT  is '${CMAKE_ROOT}'")
+message(WARNING "QT_VERSION_MAJOR: Qt${QT_VERSION_MAJOR}")
 
+#OFF
 if(BUILD_DEBUG_POSTFIX_D)
   set(CMAKE_DEBUG_POSTFIX "d")
   set(CMAKE_RELEASE_POSTFIX "")
@@ -50,10 +54,10 @@ if(BUILD_DEBUG_POSTFIX_D)
 endif()
 
 add_subdirectory(external)
-
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+message(WARNING "QT_VERSION_MAJOR: Qt${QT_VERSION_MAJOR}")
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui OpenGL)
-message(STATUS "QT_VERSION: ${QT_VERSION}, QT_DIR: ${QT_DIR}")
+message(WARNING "QT_VERSION_MAJOR: Qt${QT_VERSION_MAJOR}, QT_DIR: ${QT_DIR}")
 
 if (${QT_VERSION} VERSION_LESS 5.11.0)
   message(FATAL_ERROR "Requires qt version >= 5.11.0, Your current version is ${QT_VERSION}")
@@ -67,6 +71,7 @@ endif()
 
 # Unfortunately, as we have a split include/src, AUTOMOC doesn't work.
 # We'll have to manually specify some files
+# 不幸的是，由于我们将include/src进行了拆分，因此automoc无法正常工作。我们必须手动指定一些文件
 set(CMAKE_AUTOMOC ON)
 
 set(CPP_SOURCE_FILES
@@ -144,7 +149,7 @@ add_library(QtNodes
 
 add_library(QtNodes::QtNodes ALIAS QtNodes)
 
-
+#CMAKE_CURRENT_SOURCE_DIR: D:/QtProgram/nodeeditor-master
 target_include_directories(QtNodes
   PUBLIC
     $<INSTALL_INTERFACE:include>
@@ -153,7 +158,6 @@ target_include_directories(QtNodes
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/QtNodes/internal>
 )
-
 target_link_libraries(QtNodes
   PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
@@ -185,7 +189,7 @@ if(NOT "${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
       $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
   )
 endif()
-
+# on
 if(QT_NODES_DEVELOPER_DEFAULTS)
   target_compile_features(QtNodes PUBLIC cxx_std_14)
   set_target_properties(QtNodes PROPERTIES CXX_EXTENSIONS OFF)
