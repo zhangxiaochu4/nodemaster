@@ -33,7 +33,7 @@ std::unordered_set<ConnectionId> DynamicPortsModel::allConnectionIds(NodeId cons
 std::unordered_set<ConnectionId> DynamicPortsModel::connections(NodeId nodeId, PortType portType, PortIndex portIndex) const
 {
     std::unordered_set<ConnectionId> result;
-
+    //如果nodeid的in或者out口的id==nodeid
     std::copy_if(_connectivity.begin(), _connectivity.end(), std::inserter(result, std::end(result)),
                  [&portType, &portIndex, &nodeId](ConnectionId const &cid) { return (getNodeId(portType, cid) == nodeId && getPortIndex(portType, cid) == portIndex); });
 

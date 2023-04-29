@@ -27,12 +27,12 @@ using QtNodes::BasicGraphicsScene;
 using QtNodes::GraphicsView;
 
 GraphicsView::GraphicsView(QWidget *parent)
-    : QGraphicsView(parent)
-    , _clearSelectionAction(Q_NULLPTR)
-    , _deleteSelectionAction(Q_NULLPTR)
-    , _duplicateSelectionAction(Q_NULLPTR)
-    , _copySelectionAction(Q_NULLPTR)
-    , _pasteAction(Q_NULLPTR)
+    : QGraphicsView(parent),
+      _clearSelectionAction(Q_NULLPTR),
+      _deleteSelectionAction(Q_NULLPTR),
+      _duplicateSelectionAction(Q_NULLPTR),
+      _copySelectionAction(Q_NULLPTR),
+      _pasteAction(Q_NULLPTR)
 {
     setDragMode(QGraphicsView::ScrollHandDrag);
     setRenderHint(QPainter::Antialiasing);
@@ -57,8 +57,7 @@ GraphicsView::GraphicsView(QWidget *parent)
     setSceneRect(-maxSize, -maxSize, (maxSize * 2), (maxSize * 2));
 }
 
-GraphicsView::GraphicsView(BasicGraphicsScene *scene, QWidget *parent)
-    : GraphicsView(parent)
+GraphicsView::GraphicsView(BasicGraphicsScene *scene, QWidget *parent) : GraphicsView(parent)
 {
     setScene(scene);
 }
@@ -93,11 +92,7 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
         _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
         _deleteSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
         _deleteSelectionAction->setShortcut(QKeySequence(QKeySequence::Delete));
-        connect(_deleteSelectionAction,
-                &QAction::triggered,
-                this,
-                &GraphicsView::onDeleteSelectedObjects);
-
+        connect(_deleteSelectionAction, &QAction::triggered, this, &GraphicsView::onDeleteSelectedObjects);
         addAction(_deleteSelectionAction);
     }
 
@@ -106,10 +101,7 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
         _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
         _duplicateSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
         _duplicateSelectionAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_D));
-        connect(_duplicateSelectionAction,
-                &QAction::triggered,
-                this,
-                &GraphicsView::onDuplicateSelectedObjects);
+        connect(_duplicateSelectionAction, &QAction::triggered, this, &GraphicsView::onDuplicateSelectedObjects);
 
         addAction(_duplicateSelectionAction);
     }
@@ -119,10 +111,7 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
         _copySelectionAction = new QAction(QStringLiteral("Copy Selection"), this);
         _copySelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
         _copySelectionAction->setShortcut(QKeySequence(QKeySequence::Copy));
-        connect(_copySelectionAction,
-                &QAction::triggered,
-                this,
-                &GraphicsView::onCopySelectedObjects);
+        connect(_copySelectionAction, &QAction::triggered, this, &GraphicsView::onCopySelectedObjects);
 
         addAction(_copySelectionAction);
     }
@@ -148,12 +137,14 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
 
 void GraphicsView::centerScene()
 {
-    if (scene()) {
+    if (scene())
+    {
         scene()->setSceneRect(QRectF());
 
         QRectF sceneRect = scene()->sceneRect();
 
-        if (sceneRect.width() > this->rect().width() || sceneRect.height() > this->rect().height()) {
+        if (sceneRect.width() > this->rect().width() || sceneRect.height() > this->rect().height())
+        {
             fitInView(sceneRect, Qt::KeepAspectRatio);
         }
 
@@ -163,7 +154,8 @@ void GraphicsView::centerScene()
 
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
-    if (itemAt(event->pos())) {
+    if (itemAt(event->pos()))
+    {
         QGraphicsView::contextMenuEvent(event);
         return;
     }
@@ -172,7 +164,8 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 
     QMenu *menu = nodeScene()->createSceneMenu(scenePos);
 
-    if (menu) {
+    if (menu)
+    {
         menu->exec(event->globalPos());
     }
 }
@@ -181,7 +174,8 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 {
     QPoint delta = event->angleDelta();
 
-    if (delta.y() == 0) {
+    if (delta.y() == 0)
+    {
         event->ignore();
         return;
     }
@@ -221,10 +215,12 @@ void GraphicsView::scaleUp()
     double const step = 1.2;
     double const factor = std::pow(step, 1.0);
 
-    if (_scaleRange.maximum > 0) {
+    if (_scaleRange.maximum > 0)
+    {
         QTransform t = transform();
         t.scale(factor, factor);
-        if (t.m11() >= _scaleRange.maximum) {
+        if (t.m11() >= _scaleRange.maximum)
+        {
             setupScale(t.m11());
             return;
         }
@@ -239,10 +235,12 @@ void GraphicsView::scaleDown()
     double const step = 1.2;
     double const factor = std::pow(step, -1.0);
 
-    if (_scaleRange.minimum > 0) {
+    if (_scaleRange.minimum > 0)
+    {
         QTransform t = transform();
         t.scale(factor, factor);
-        if (t.m11() <= _scaleRange.minimum) {
+        if (t.m11() <= _scaleRange.minimum)
+        {
             setupScale(t.m11());
             return;
         }
@@ -295,7 +293,8 @@ void GraphicsView::onPasteObjects()
 
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
-    switch (event->key()) {
+    switch (event->key())
+    {
     case Qt::Key_Shift:
         setDragMode(QGraphicsView::RubberBandDrag);
         break;
@@ -309,7 +308,8 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
-    switch (event->key()) {
+    switch (event->key())
+    {
     case Qt::Key_Shift:
         setDragMode(QGraphicsView::ScrollHandDrag);
         break;
@@ -323,7 +323,8 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     QGraphicsView::mousePressEvent(event);
-    if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton)
+    {
         _clickPos = mapToScene(event->pos());
     }
 }
@@ -331,9 +332,11 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
-    if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton) {
+    if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
+    {
         // Make sure shift is not being pressed
-        if ((event->modifiers() & Qt::ShiftModifier) == 0) {
+        if ((event->modifiers() & Qt::ShiftModifier) == 0)
+        {
             QPointF difference = _clickPos - mapToScene(event->pos());
             setSceneRect(sceneRect().translated(difference.x(), difference.y()));
         }
@@ -344,7 +347,8 @@ void GraphicsView::drawBackground(QPainter *painter, const QRectF &r)
 {
     QGraphicsView::drawBackground(painter, r);
 
-    auto drawGrid = [&](double gridStep) {
+    auto drawGrid = [&](double gridStep)
+    {
         QRect windowRect = rect();
         QPointF tl = mapToScene(windowRect.topLeft());
         QPointF br = mapToScene(windowRect.bottomRight());
@@ -355,14 +359,16 @@ void GraphicsView::drawBackground(QPainter *painter, const QRectF &r)
         double top = std::floor(br.y() / gridStep + 1.0);
 
         // vertical lines
-        for (int xi = int(left); xi <= int(right); ++xi) {
+        for (int xi = int(left); xi <= int(right); ++xi)
+        {
             QLineF line(xi * gridStep, bottom * gridStep, xi * gridStep, top * gridStep);
 
             painter->drawLine(line);
         }
 
         // horizontal lines
-        for (int yi = int(bottom); yi <= int(top); ++yi) {
+        for (int yi = int(bottom); yi <= int(top); ++yi)
+        {
             QLineF line(left * gridStep, yi * gridStep, right * gridStep, yi * gridStep);
             painter->drawLine(line);
         }
